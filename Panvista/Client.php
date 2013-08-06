@@ -19,7 +19,7 @@ namespace Panvista;
 
 require_once __DIR__ . DIRECTORY_SEPARATOR . 'Exception.php';
 
-class Api
+class Client
 {
     /**
      * @var string $_clientToken The client token

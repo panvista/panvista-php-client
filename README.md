@@ -13,7 +13,7 @@ require_once __DIR__ . DIRECTORY_SEPARATOR . 'Panvista' . DIRECTORY_SEPARATOR . 
 echo "<pre>";
 
 try {
-    $client = new Panvista\Api('YOUR_CLIENT_TOKEN', 'YOUR_CLIENT_SECRET');
+    $client = new Panvista\Client('YOUR_CLIENT_TOKEN', 'YOUR_CLIENT_SECRET');
     print_r($client->call('/sections/list/'));
     print_r($client->call('/content/list/?section_id=CONTENT_SECTION_ID'));
     print_r($client->call('/library/list/?section_id=LIBRARY_SECTION_ID'));
@@ -21,7 +21,7 @@ try {
                   'object' => '@/path/to/image.jpg',
                   'section_id' => 'LIBRARY_SECTION_ID');
 
-    $item = $client->call('/library/add/', 'PUT', $data);
+    $item = $client->call('/library/', 'PUT', $data);
     print_r($item);
 
     if (isset($item->id)) {
