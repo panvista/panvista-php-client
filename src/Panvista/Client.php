@@ -64,6 +64,28 @@ class Client
     }
 
     /**
+     * Get the client token
+     *
+     * @access public
+     * @return string
+     */
+    public function getClientToken()
+    {
+        return $this->_clientToken;
+    }
+
+    /**
+     * Get the client secret
+     *
+     * @access public
+     * @return string
+     */
+    public function getClientSecret()
+    {
+        return $this->_clientSecret;
+    }
+
+    /**
      * Set the API url
      *
      * @param string $apiUrl
@@ -73,6 +95,17 @@ class Client
     public function setApiUrl($apiUrl)
     {
         $this->_apiUrl = $apiUrl;
+    }
+
+    /**
+     * Get the API URL
+     *
+     * @access public
+     * @return string
+     */
+    public function getApiUrl()
+    {
+        return $this->_apiUrl;
     }
 
     /**
@@ -91,29 +124,8 @@ class Client
             $endpoint = substr($endpoint, 1);
         }
 
-        $requestUrl = $this->_buildRequestUrl($endpoint, $method);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_URL, $requestUrl);
-
-        if (!empty($data)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        }
-
-        $response = curl_exec($ch);
-
-        if ($response === false) {
-            $error = curl_error($ch);
-            curl_close($ch);
-            throw new \Panvista\Exception($error);
-        }
-
-        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        $requestUrl = $this->getRequestUrl($endpoint, $method);
+        list($responseCode, $response) = $this->_sendRequest($endpoint, $method, $data);
         $result = json_decode($response);
 
         if ($responseCode >= 200 && $responseCode < 300) {
@@ -148,14 +160,49 @@ class Client
     }
 
     /**
-     * Build up the request url with the authentication details
+     * Send a request to the API service
+     *
+     * @param string $requestUrl
+     * @param string $method
+     * @param array $data
+     * @throws \Panvista\Exception
+     * @return Array
+     */
+    protected function _sendRequest($requestUrl, $method, $data)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($ch, CURLOPT_URL, $requestUrl);
+
+        if (!empty($data)) {
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
+
+        $response = curl_exec($ch);
+
+        if ($response === false) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new \Panvista\Exception($error);
+        }
+
+        $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        return array($responseCode, $response);
+    }
+
+    /**
+     * Get the request url with the authentication details
      *
      * @param string $endpoint The API endpoint
      * @param unknown $method The request method
-     * @access private
+     * @access public
      * @return string
      */
-    private function _buildRequestUrl($endpoint, $method)
+    public function getRequestUrl($endpoint, $method)
     {
         $seperator = stripos($endpoint, '?') === false ? '?' : '&';
         $nonce = $this->_generateNonce();
