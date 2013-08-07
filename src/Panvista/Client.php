@@ -125,7 +125,7 @@ class Client
         }
 
         $requestUrl = $this->getRequestUrl($endpoint, $method);
-        list($responseCode, $response) = $this->_sendRequest($endpoint, $method, $data);
+        list($responseCode, $response) = $this->_sendRequest($requestUrl, $method, $data);
         $result = json_decode($response);
 
         if ($responseCode >= 200 && $responseCode < 300) {
