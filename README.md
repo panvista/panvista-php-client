@@ -30,9 +30,10 @@ try {
 } catch (Panvista\Exception $e) {
     print_r($e);
 }
+
 echo "</pre>";
 ```
 
 ## Documentation
 
-Please [contact Panvista](mailto:info@panvistamobile.com) to retrieve the documentation on all our API endpoints.
+You can view our API documentation on all our available endpoints [here](http://docs.panvista.apiary.io/).
