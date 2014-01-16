@@ -1,4 +1,4 @@
-![Panvista Mobile](http://panvistamobile.com/wp-content/themes/panvista_media/images/panvista.png)
+![Panvista Mobile](http://panvistamobile.com/static/git/panvista.png)
 
 # Panvista PHP Client
 
