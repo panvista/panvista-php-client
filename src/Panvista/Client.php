@@ -48,19 +48,28 @@ class Client
     /**
      * Class constructor
      *
-     * @param string $clientToken
-     * @param string $clientSecret
+     * @param string $clientToken (Optional)
+     * @param string $clientSecret (Optional)
      * @access public
      * @throws \Panvista\Exception
      */
-    public function __construct($clientToken, $clientSecret)
+    public function __construct($clientToken = null, $clientSecret = null)
     {
-        if (empty($clientToken) || empty($clientSecret)) {
-            throw new \Panvista\Exception('Please enter in a client and secret token.');
-        }
-
         $this->_clientToken = $clientToken;
         $this->_clientSecret = $clientSecret;
+    }
+
+    /**
+     * Set the client token
+     *
+     * @param string $clientToken
+     * @access public
+     * @return Panvista\Api
+     */
+    public function setClientToken($clientToken)
+    {
+        $this->_clientToken = $clientToken;
+        return $this;
     }
 
     /**
@@ -72,6 +81,19 @@ class Client
     public function getClientToken()
     {
         return $this->_clientToken;
+    }
+
+    /**
+     * Set the client secret
+     *
+     * @param string $clientSecret
+     * @access public
+     * @return Panvista\Api
+     */
+    public function setClientSecret($clientSecret)
+    {
+        $this->_clientToken = $clientSecret;
+        return $this;
     }
 
     /**
@@ -205,12 +227,18 @@ class Client
      */
     public function getRequestUrl($endpoint, $method)
     {
+        $clientToken = $this->getClientToken();
+
+        if (!$clientToken) {
+            return sprintf('%s/%s/%s', $this->_apiUrl, $this->_apiVersion, $endpoint);
+        }
+
         $seperator = stripos($endpoint, '?') === false ? '?' : '&';
         $nonce = $this->_generateNonce();
         $timestamp = time();
         $requestUrl = sprintf('/%s/%s%snonce=%s&timestamp=%s', $this->_apiVersion, $endpoint, $seperator, $nonce, $timestamp);
         $signature = $this->_generateSignature($method, $nonce, $timestamp, $requestUrl);
-        return sprintf('%s%s&access_token=%s&signature=%s', $this->_apiUrl, $requestUrl, $this->_clientToken, $signature);
+        return sprintf('%s%s&access_token=%s&signature=%s', $this->_apiUrl, $requestUrl, $clientToken, $signature);
     }
 
     /**
