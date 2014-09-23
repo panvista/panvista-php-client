@@ -92,7 +92,7 @@ class Client
      */
     public function setClientSecret($clientSecret)
     {
-        $this->_clientToken = $clientSecret;
+        $this->_clientSecret = $clientSecret;
         return $this;
     }
 
@@ -148,7 +148,7 @@ class Client
 
         $requestUrl = $this->getRequestUrl($endpoint, $method);
         list($responseCode, $response) = $this->_sendRequest($requestUrl, $method, $data);
-        $result = json_decode($response);
+        $result = json_decode($response, true);
 
         if ($responseCode >= 200 && $responseCode < 300) {
             return $result;

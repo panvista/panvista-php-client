@@ -24,8 +24,8 @@ try {
     $item = $client->call('/library/', 'PUT', $data);
     print_r($item);
 
-    if (isset($item->id)) {
-        print_r($client->call('/library/' . $item->id . '/', 'DELETE'));
+    if (isset($item['id'])) {
+        print_r($client->call('/library/' . $item['id'] . '/', 'DELETE'));
     }
 } catch (Panvista\Exception $e) {
     print_r($e);
