@@ -136,18 +136,19 @@ class Client
      * @param string $endpoint The API endpoit eg: /users/list/
      * @param string $method (Optional) The request method
      * @param array $data (Optional) Any data to pass through to the API
+     * @param string $contentType (Optional) The content-type of the request
      * @access public
      * @throws \Panvista\Exception
-     * @return Object An object of the json response
+     * @return Array An array of the json response
      */
-    public function call($endpoint, $method = 'GET', $data = array())
+    public function call($endpoint, $method = 'GET', $data = array(), $contentType = null)
     {
         if (substr($endpoint, 0, 1) == '/') {
             $endpoint = substr($endpoint, 1);
         }
 
         $requestUrl = $this->getRequestUrl($endpoint, $method);
-        list($responseCode, $response) = $this->_sendRequest($requestUrl, $method, $data);
+        list($responseCode, $response) = $this->_sendRequest($requestUrl, $method, $data, $contentType);
         $result = json_decode($response, true);
 
         if ($responseCode >= 200 && $responseCode < 300) {
@@ -187,10 +188,11 @@ class Client
      * @param string $requestUrl
      * @param string $method
      * @param array $data
+     * @param string $contentType
      * @throws \Panvista\Exception
      * @return Array
      */
-    protected function _sendRequest($requestUrl, $method, $data)
+    protected function _sendRequest($requestUrl, $method, $data, $contentType)
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -200,8 +202,20 @@ class Client
         curl_setopt($ch, CURLOPT_URL, $requestUrl);
         curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . '/cacert.pem');
 
+        $headers = array();
+
         if (!empty($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
+
+        if ($contentType) {
+            $headers[] = 'Content-Type: ' . $contentType;
+
+            if ($data && is_string($data)) {
+                $headers[] = 'Content-Length: ' . strlen($data);
+            }
+
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         }
 
         $response = curl_exec($ch);
