@@ -29,14 +29,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(self::clientSecret, $client->getClientSecret());
     }
 
-    /**
-     * @expectedException \Panvista\Exception
-     */
-    public function testBadSetup()
-    {
-        new Panvista\Client('', '');
-    }
-
     public function testValidCall()
     {
         $stub = $this->getMockBuilder('\Panvista\Client')
@@ -49,7 +41,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
              ->will($this->returnValue(array(200, json_encode(array('success' => true)))));
 
         $result = $stub->call('/test/endpoint/');
-        $this->assertTrue($result->success);
+        $this->assertTrue($result['success']);
     }
 
     /**
